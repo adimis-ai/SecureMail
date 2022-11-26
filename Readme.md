@@ -4,7 +4,7 @@
 2. Create a virtual environment and install packages in requirements.txt using command {pip install -r requirements.txt}
 3. Run server.py file using {python3 server.py}
 
-#FRONTEND
+# FRONTEND
 4. In the frontend section run {npm install}
 5. Then run {npm start}
 
