@@ -1,17 +1,33 @@
 import React, { useState } from 'react'
 import { useAuth0 } from "@auth0/auth0-react";
 import './Form.css'
+import { FiCopy } from 'react-icons/fi'; // Import the copy icon
 
 function EncryptionForm() {
   const { isAuthenticated } = useAuth0();
-  /*Encryption Function*/
   const [sender_email,setEmail] = useState('')
   const [sender_password,setPassword] = useState('')
   const [receiver_email,setREmail] = useState('')
   const [message_body,setMessage] = useState('')
   const [pass_code,setPasscode] = useState('')
   const [data,setData] = useState('')
+  const [private_key, setPrivateKey] = useState(''); // Added this state to hold the cleaned private key
+  const [loader, setLoader] = useState(false);
+
+  const cleanPrivateKey = (key) => { // Function to remove undesired parts from the private key
+    let cleanedKey = key
+      .replace("-----BEGIN RSA PRIVATE KEY-----\n", "")
+      .replace("\n-----END RSA PRIVATE KEY-----\n", "")
+      .replace(/\n/g, "");
+    return cleanedKey;
+  };
+
+  const copyToClipboard = () => { // Function to copy the private key to the clipboard
+    navigator.clipboard.writeText(private_key);
+  };
+
   function sendmail(){ 
+    setLoader(true);
     console.warn({sender_email,sender_password,receiver_email,message_body,pass_code});
     let data = {sender_email,sender_password,receiver_email,message_body,pass_code}
     fetch("/sendMail",{
@@ -23,14 +39,18 @@ function EncryptionForm() {
       body:JSON.stringify(data)
     }).then((result)=>{
       result.json().then((resp)=>{
-        setData(resp)
+        setData(resp);
+        setPrivateKey(cleanPrivateKey(resp.private_key)); // Set the cleaned private key to the state
+        console.log(resp);
+        setLoader(false);
       })
     })
-    console.warn(data)
+    console.warn(data);
+    setLoader(false);
   }
-
   return (
     isAuthenticated && (
+
       <div className="background">
           <div className="container">
             <div className="screen">
@@ -78,10 +98,14 @@ function EncryptionForm() {
               </div>
             </div>
             <div className="app-form-group message">
-                    <h5 className="app-form-control-key">{data.pass_code}</h5>
-                </div>
+              <h5 className="app-form-control-key">
+                {private_key.substring(0, 15) + "..."}
+                <FiCopy onClick={copyToClipboard} />
+              </h5>
+            </div>
           </div>
-        </div>
+      </div>
+      
     )
   )
 }
