@@ -1,113 +1,53 @@
-import React from 'react'
+import React, { useState } from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
-import LogoutButton from './LogoutButton';
-import EncryptionForm from './EncryptionForm';
-import DecryptionForm from './DecryptionForm';
-import { useState } from "react";
+import FormContainer from './FormContainer';
 
 function Navbar() {
   const { isAuthenticated } = useAuth0();
-  const [encryption, setEncryption] = useState(true);
-  const [decryption, setDecryption] = useState(false);
-  const EncryptionHandler = () => {
-      setEncryption(true);
-      setDecryption(false);
+  const [displayForm, setDisplayForm] = useState(false);
+
+  const handleSendMailClick = () => {
+    setDisplayForm(true);
   };
-  const DecryptionHandler = () => {
-      setEncryption(false);
-      setDecryption(true);
+
+  const handleDecryptMailClick = () => {
+    setDisplayForm(false); // Set displayForm to true for the decryption form
   };
 
   return (
     isAuthenticated && (
       <>
-        <div className="flex items-center justify-center">
-          <div className="inline-flex rounded-3xl py-50" role="group">
-            <button
-              type="button"
-              onClick={EncryptionHandler}
-              className="
-              rounded-3xl
-              px-6
-              py-2
-              border-2 border-black
-              text-black
-              font-medium
-              text-bold
-              leading-tight
-              uppercase
-              hover:bg-black hover:bg-opacity-5
-              focus:outline-none focus:ring-0
-              transition
-              duration-150
-              ease-in-out
-              my-5
-            "
-            >
-              SEND MAIL
-            </button>
-            <button
-              type="button"
-              onClick={DecryptionHandler}
-              className="
-              rounded-3xl
-              px-6
-              my-5
-              mx-5
-              py-2
-              border-2 border-black
-              text-black
-              font-bold
-              text-xs
-              leading-tight
-              uppercase
-              hover:bg-black hover:bg-opacity-5
-              focus:outline-none focus:ring-0
-              transition
-              duration-150
-              ease-in-out
-            "
-            >
-              DECRYPT MAIL
-            </button>
-            <button
-              type="button"
-              className="
-                rounded-3xl
-                px-6 
-                py-2 
-                my-5
-                border-2 
-                border-black 
-                text-black
-                font-bold
-                text-xs
-                leading-tight
-                uppercase
-                hover:bg-black hover:bg-opacity-5
-                focus:outline-none focus:ring-0
-                transition
-                duration-150
-                ease-in-out
-              "
-            >
-              <LogoutButton/>
-            </button>
+        <div className="navbar bg-base-100">
+          <div className="flex-1">
+            <a href="/" className="btn btn-ghost normal-case text-xl">SecureMail</a>
+          </div>
+          <div className="flex-none">
+            <ul className="menu menu-horizontal px-1">
+              <li>
+                <button
+                  className="font-bold bg-black text-white rounded-3xl hover:bg-white hover:text-black border border-black transition"
+                  onClick={handleSendMailClick}
+                >
+                  Send Mail
+                </button>
+              </li>
+              <li>
+                <button
+                  className="ml-2 font-bold bg-black text-white rounded-3xl hover:bg-white hover:text-black border border-black transition"
+                  onClick={handleDecryptMailClick}
+                >
+                  Decrypt Mail
+                </button>
+              </li>
+            </ul>
           </div>
         </div>
-
         <div>
-        {encryption && (
-              <EncryptionForm />
-            )}
-            {decryption && (
-              <DecryptionForm />
-            )}
+          <FormContainer displayEncryptionForm={displayForm} />
         </div>
       </>
     )
-  )
+  );
 }
 
-export default Navbar
-
+export default Navbar;
